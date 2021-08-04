@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -53,7 +54,7 @@ class BeerControllerIT {
             .build();
     }
 
-    @WithMockUser("someuser") // tells tells the wac that you are logged in
+    @WithMockUser("someuser") // forces mock login credentials in the wac
     @Test
     void findBeers() throws Exception {
         mockMvc.perform(get("/beers/find"))
@@ -62,4 +63,11 @@ class BeerControllerIT {
             .andExpect(model().attributeExists("beer"));
     }
 
+    @Test
+    void findBeersWithHttpBasic() throws Exception {
+        mockMvc.perform(get("/beers/find").with(httpBasic("fred", "bob")))
+            .andExpect(status().isOk())
+            .andExpect(view().name("beers/findBeers"))
+            .andExpect(model().attributeExists("beer"));
+    }
 }

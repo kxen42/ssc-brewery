@@ -18,3 +18,20 @@ Add this to the POM
     <artifactId>spring-boot-starter-security</artifactId>
 </dependency>
 ```
+
+## Tests
+
+To test the integration of SpSec with the controllers you need `@WebMvcTest` on the class. You then want to get the autowired
+web context (wac). That's standard for any MVC test.
+
+This will stuff user credentials into the wac without going through the authentication manager.
+```
+@WithMockUser("someuser")
+```
+
+You don't use that if you are using HTTP Basic Auth. In that case you use this which does go through the authentication manager.
+For this example, fred & bob are configured in the `application.properties` as the default user/password. The `httpBasic()` method
+does the Base64 encoding and sets the `Authroization: Basic` header.
+```
+mockMvc.perform(get("/beers/find").with(httpBasic("fred", "bob")))
+```
