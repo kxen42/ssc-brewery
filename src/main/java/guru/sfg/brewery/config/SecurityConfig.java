@@ -13,9 +13,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests(authorize ->
-                authorize.antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll()
-                )
-        .authorizeRequests() // all the pathes
+                authorize
+                    .antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll()
+                    .antMatchers("/beers/find", "/beers*").permitAll()
+            )
+            .authorizeRequests() // all the paths
             .anyRequest().authenticated()
             .and()
             .formLogin().and()
