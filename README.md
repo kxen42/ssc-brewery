@@ -1,4 +1,5 @@
 # Brewery Spring MVC Monolith
+by John Thompson
 
 This repository contains source code examples used to support my on-line courses about the Spring Framework.
 [Spring Security Core: Beginner to Guru](https://www.udemy.com/course/spring-security-core-beginner-to-guru/?referralCode=306F288EB78688C0F3BC)
@@ -7,7 +8,7 @@ This repo is a fork from his repo. The kxenmaster branch is my development branc
 
 ## Getting started
 
-Before adding Spring Security to the POM, there is no login form. After adding the dependency to the classpath, a default
+Before adding Spring Security (SpSec) to the POM, there is no login form. After adding the dependency to the classpath, a default
 login form, using HTTP Basic Auth, is generated. The default username in 'user', and you will find the generated password
 in the console when you start the application.
 
@@ -17,6 +18,31 @@ Add this to the POM
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-security</artifactId>
 </dependency>
+```
+
+## Java Config
+
+Use Java config to override the default behavior of SpSec by providing a [`WebSecurityConfigurerAdapter`](https://docs.spring.io/spring-security/site/docs/current/reference/html5/#oauth2login-provide-websecurityconfigureradapter).
+Override the [`WebSecurityConfigurerAdapter.congifure(HttpSecurity)`](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/web/configuration/WebSecurityConfigurerAdapter.html#configure(org.springframework.security.config.annotation.web.builders.HttpSecurity) method
+which provides the default behavior.
+
+Here the antMatchers cover the index page, login, static resources, and the front-end Find Beers page.
+
+```
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests(authorize ->
+                authorize
+                    .antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll()
+                    .antMatchers("/beers/find", "/beers*").permitAll()
+            )
+            .authorizeRequests() // all the paths
+            .anyRequest().authenticated()
+            .and()
+            .formLogin().and()
+            .httpBasic();
+    }
 ```
 
 ## Tests
