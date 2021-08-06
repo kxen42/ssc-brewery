@@ -17,21 +17,21 @@ import guru.sfg.brewery.services.BreweryService;
 
 public class BaseIT {
     @Autowired
-    WebApplicationContext wac;
-    MockMvc mockMvc;
+    protected WebApplicationContext wac;
+    protected MockMvc mockMvc;
     @MockBean
-    BeerRepository beerRepository;
+    protected BeerRepository beerRepository;
     @MockBean
-    BeerInventoryRepository beerInventoryRepository;
+    protected BeerInventoryRepository beerInventoryRepository;
     @MockBean
-    BreweryService breweryService;
+    protected BreweryService breweryService;
     @MockBean
-    CustomerRepository customerRepository;
+    protected CustomerRepository customerRepository;
     @MockBean
-    BeerService beerService;
+    protected BeerService beerService;
 
     @BeforeEach
-    void setUp() {
+    protected void setUp() {
         mockMvc = MockMvcBuilders
             .webAppContextSetup(wac)
             // be sure to get the one from MVC rather the one in Reactive

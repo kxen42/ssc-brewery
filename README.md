@@ -45,6 +45,11 @@ Here the antMatchers cover the index page, login, static resources, and the fron
     }
 ```
 
+For a REST API, include the HTTP method.
+```
+.antMatchers(HttpMethod.GET, "/api/v1/beer/*").permitAll()
+```
+
 ## Tests
 
 To test the integration of SpSec with the controllers you need `@WebMvcTest` on the class. You then want to get the autowired
