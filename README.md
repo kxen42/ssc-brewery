@@ -45,9 +45,22 @@ Here the antMatchers cover the index page, login, static resources, and the fron
     }
 ```
 
-For a REST API, include the HTTP method.
+For a REST API, include the HTTP method. Without the HTTP method, the matchers don't care what method is used.
 ```
 .antMatchers(HttpMethod.GET, "/api/v1/beer/*").permitAll()
+```
+
+MVC Matchers use the same syntax as that used to define the request mapping.
+
+Given mappings in a `@RestController`:
+```java
+@RequestMapping("/api/v1/")
+@GetMapping(path = {"beerUpc/{upc}"}, produces = { "application/json" })
+```
+
+To add `permitAll` to this mapping using `mvcMatchers`:
+```java
+.mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").permitAll()
 ```
 
 ## Tests
