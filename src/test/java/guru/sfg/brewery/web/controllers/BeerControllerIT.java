@@ -20,20 +20,22 @@ class BeerControllerIT extends BaseIT {
             .andExpect(model().attributeExists("beer"));
     }
 
-    @Test
-    void findBeersWithParameters() throws Exception {
-        // confirm that security is PermitsAll
-        mockMvc.perform(get("/beers").queryParam("beerName", ""))
-            .andExpect(status().isOk());
-    }
+// TODO: complete this experiment
+//    @Test
+//    void findBeersWithParameters() throws Exception {
+//        // confirm that security is PermitsAll
+//        mockMvc.perform(get("/beers").queryParam("beerName", ""))
+//            .andExpect(status().isOk());
+//    }
 
-    @Test
-    void findBeersWithParametersAlternate() throws Exception {
-        // confirm that security is PermitsAll
-        // see https://www.baeldung.com/integration-testing-in-spring
-        mockMvc.perform(get("/beers?beerName={value}", ""))
-            .andExpect(status().isOk());
-    }
+// TODO: complete this experiment
+//    @Test
+//    void findBeersWithParametersAlternate() throws Exception {
+//        // confirm that security is PermitsAll
+//        // see https://www.baeldung.com/integration-testing-in-spring
+//        mockMvc.perform(get("/beers?beerName={value}", "Galaxy"))
+//            .andExpect(status().isOk());
+//    }
 
     @Test
     void findBeersAnonymousUser() throws Exception {
@@ -47,7 +49,7 @@ class BeerControllerIT extends BaseIT {
 
     @Test
     @WithAnonymousUser
-    void findBeersAnonymousUserAlternate() throws Exception {
+    void findBeersAnonymousUserUsingAnnotation() throws Exception {
         // verify it gets through AnonymousAuthenticationFilter
         // aka the anonymouse "authentication" facility
         mockMvc.perform(get("/beers/find"))
