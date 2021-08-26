@@ -3,6 +3,7 @@ package guru.sfg.brewery.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -32,18 +33,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .httpBasic();
     }
 
-    /**
+    /*
      * Overriding the usersDetailsService means that the {@code spring.security.user.name} and {@code spring.security.user.password} values in the {@code application.properties} file
      * are not used.
      * @return spring/guru ADMIN UserDetails, user/password USER UserDetails
      */
+/*
     @Override
     @Bean
     protected UserDetailsService userDetailsService() {
-        UserDetails admin = User.withDefaultPasswordEncoder() /* deprecated as a warning not to use in production */
+        UserDetails admin = User.withDefaultPasswordEncoder() // deprecated as a warning not to use in production
             .username("spring")
             .password("guru")
-            .roles("ADMIN") /* must have at least one */
+            .roles("ADMIN") // must have at least one
             .build();
 
         UserDetails user = User.withDefaultPasswordEncoder()
@@ -53,5 +55,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .build();
 
         return new InMemoryUserDetailsManager(admin, user);
+    }
+    */
+
+
+    /**
+     * Using the Fluent API to setup the in-memory authentication.
+     * <p>
+     * Here we use the {@code noop} password encoder - you have to provide a password encoder.
+     * Thee syntax is {@code .password("{noop}password")}.
+     * @param auth
+     * @throws Exception
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+            .withUser("spring")
+            .password("{noop}guru")
+            .roles("ADMIN")
+            .and()
+            .withUser("user")
+            .password("{noop}password")
+            .roles("USER");
     }
 }
