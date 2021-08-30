@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,20 +18,33 @@ import org.springframework.util.DigestUtils;
  * <li>NoOpPasswordEncoder</li>
  * <li>LdapShaPasswordEncoder</li>
  * <li>StandardPasswordEncoder</li>
- *</ul>
+ * </ul>
  */
 public class PasswordEncodingTest {
 
     static final String PASSWORD = "password";
 
     @Test
+    void bcryptExample() {
+     PasswordEncoder bcrypt  = new BCryptPasswordEncoder();
+        String first = bcrypt.encode(PASSWORD);
+        System.out.printf("XENSON ---- bcrypt 1st\t%s%n", first);
+
+        String encoded = bcrypt.encode(PASSWORD);
+        System.out.printf("XENSON ---- bcrypt 2nd\t%s%n", encoded);
+
+        assertTrue(bcrypt.matches(PASSWORD, encoded));
+
+    }
+
+    @Test
     void sha256Example() {
         PasswordEncoder sha256 = new StandardPasswordEncoder();
         String first = sha256.encode(PASSWORD);
-        System.out.printf("XENSON ---- 1st\t%s%n", first);
+        System.out.printf("XENSON ---- sha256 1st\t%s%n", first);
 
         String encoded = sha256.encode(PASSWORD);
-        System.out.printf("XENSON ---- 2nd\t%s%n", encoded);
+        System.out.printf("XENSON ---- sha256 2nd\t%s%n", encoded);
 
         assertTrue(sha256.matches(PASSWORD, encoded));
 
