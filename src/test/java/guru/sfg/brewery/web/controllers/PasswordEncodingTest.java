@@ -25,6 +25,17 @@ public class PasswordEncodingTest {
     static final String PASSWORD = "password";
 
     @Test
+    void bcrypt15Example() {
+        PasswordEncoder bcrypt15 = new BCryptPasswordEncoder(15);
+        String encoded = bcrypt15.encode(PASSWORD);
+        String tigerEncoded = bcrypt15.encode("tiger");
+        System.out.printf("XENSON ---- bcrypt tiger\t%s%n", tigerEncoded);
+
+        assertTrue(bcrypt15.matches(PASSWORD, encoded));
+
+    }
+
+    @Test
     void bcryptExample() {
      PasswordEncoder bcrypt  = new BCryptPasswordEncoder();
         String first = bcrypt.encode(PASSWORD);
