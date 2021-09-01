@@ -12,6 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 public class SfgPasswordEncoderFactories {
 
+    private SfgPasswordEncoderFactories() {
+        throw new UnsupportedOperationException("not allowed to construct class");
+    }
+
     // Assignment - we want bcrypt15 to be the default encoder
     // modification of PasswordEncoderFactories.createDelegatingPasswordEncoder()
     public static PasswordEncoder createDelegatingPasswordEncoder() {
@@ -24,9 +28,5 @@ public class SfgPasswordEncoderFactories {
         encoders.put("sha256", new org.springframework.security.crypto.password.StandardPasswordEncoder());
 
         return new DelegatingPasswordEncoder(encodingId, encoders);
-    }
-
-    private SfgPasswordEncoderFactories() {
-        throw new UnsupportedOperationException("not allowed to construct class");
     }
 }
