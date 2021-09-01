@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -43,25 +44,42 @@ public class RestHeaderAuthFilter extends AbstractAuthenticationProcessingFilter
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Request is to process authentication");
+        if (log.isDebugEnabled()) {
+            log.debug("Request is to process authentication");
         }
 
-        Authentication authResult = attemptAuthentication(request, response);
-
-        // Authentication success
-        if (authResult != null) {
-            successfulAuthentication(request, response, chain, authResult);
-        } else {
-            chain.doFilter(request, response);
+        try {
+            Authentication authResult = attemptAuthentication(request, response);
+            // Authentication success
+            if (authResult != null) {
+                successfulAuthentication(request, response, chain, authResult);
+            } else {
+                chain.doFilter(request, response);
+            }
+        } catch (AuthenticationException e) {
+            log.error("Authentication failed", e);
+            unsuccessfulAuthentication(request, response, e);
         }
-
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Authentication success. Updating SecurityContextHolder to contain: "
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        // the default AuthenticationFailureHandler does this too
+        SecurityContextHolder.clearContext();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Authentication request failed: " + failed.toString(), failed);
+            log.debug("Updated SecurityContextHolder to contain null Authentication");
+        }
+
+        // For REST just return 401, there is no failure page to redirect to
+        response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
+        if (log.isDebugEnabled()) {
+            log.debug("Authentication success. Updating SecurityContextHolder to contain: "
                 + authResult);
         }
 
@@ -70,7 +88,7 @@ public class RestHeaderAuthFilter extends AbstractAuthenticationProcessingFilter
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String username = StringUtils.defaultString(getUser(request));
         String password = StringUtils.defaultString(getPassword(request));
 
