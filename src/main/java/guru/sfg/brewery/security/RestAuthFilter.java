@@ -1,4 +1,4 @@
-package guru.sfg.security;
+package guru.sfg.brewery.security;
 
 import java.io.IOException;
 
@@ -30,12 +30,12 @@ import lombok.extern.slf4j.Slf4j;
  * </ul>
  */
 @Slf4j
-public class RestHeaderAuthFilter extends AbstractAuthenticationProcessingFilter {
-    public static final String KEY_HDR = "Api-Key";
-    public static final String SECRET_HDR = "Api-Secret";
+public abstract class RestAuthFilter extends AbstractAuthenticationProcessingFilter {
 
+    public static final String API_KEY = "Api-Key";
+    public static final String API_SECRET = "Api-Secret";
 
-    public RestHeaderAuthFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
+    protected RestAuthFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
         super(requiresAuthenticationRequestMatcher);
     }
 
@@ -84,8 +84,8 @@ public class RestHeaderAuthFilter extends AbstractAuthenticationProcessingFilter
         }
 
         SecurityContextHolder.getContext().setAuthentication(authResult);
-
     }
+
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -103,11 +103,8 @@ public class RestHeaderAuthFilter extends AbstractAuthenticationProcessingFilter
         }
     }
 
-    private String getPassword(HttpServletRequest request) {
-        return request.getHeader(SECRET_HDR);
-    }
+     public abstract String getPassword(HttpServletRequest request);
 
-    private String getUser(HttpServletRequest request) {
-        return request.getHeader(KEY_HDR);
-    }
+     public abstract String getUser(HttpServletRequest request);
+
 }

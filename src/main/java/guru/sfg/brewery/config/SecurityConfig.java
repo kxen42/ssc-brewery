@@ -12,15 +12,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import guru.sfg.security.RestHeaderAuthFilter;
-import guru.sfg.security.SfgPasswordEncoderFactories;
+import guru.sfg.brewery.security.RestHeaderAuthFilter;
+import guru.sfg.brewery.security.RestParameterAuthFilter;
+import guru.sfg.brewery.security.SfgPasswordEncoderFactories;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public RestHeaderAuthFilter restHeaderAuthFilter(AuthenticationManager authenticationManager) {
+        // set the required things for this filter
         RestHeaderAuthFilter filter = new RestHeaderAuthFilter(new AntPathRequestMatcher("/api/**"));
+        filter.setAuthenticationManager(authenticationManager);
+        return filter;
+    }
+
+    public RestParameterAuthFilter restParameterAuthFilter(AuthenticationManager authenticationManager) {
+        // set the required things for this filter
+        RestParameterAuthFilter filter = new RestParameterAuthFilter(new AntPathRequestMatcher("/api/**"));
         filter.setAuthenticationManager(authenticationManager);
         return filter;
     }
@@ -29,6 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.addFilterBefore(restHeaderAuthFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
             .csrf().disable();
+
+        http.addFilterBefore(restParameterAuthFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
 
         http
             .authorizeRequests(authorize ->
@@ -50,27 +61,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * are not used.
      * @return spring/guru ADMIN UserDetails, user/password USER UserDetails
      */
-/*
-    @Override
-    @Bean
-    protected UserDetailsService userDetailsService() {
-        UserDetails admin = User.withDefaultPasswordEncoder() // deprecated as a warning not to use in production
-            .username("spring")
-            .password("guru")
-            .roles("ADMIN") // must have at least one
-            .build();
-
-        UserDetails user = User.withDefaultPasswordEncoder()
-            .username("user")
-            .password("password")
-            .roles("ADMIN")
-            .build();
-
-        return new InMemoryUserDetailsManager(admin, user);
-    }
-    */
-
-
     /**
      * Using the Fluent API to setup the in-memory authentication.
      * <p>

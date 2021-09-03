@@ -1,4 +1,4 @@
-package guru.sfg.security;
+package guru.sfg.brewery.security;
 
 import java.util.HashMap;
 import java.util.Map;
