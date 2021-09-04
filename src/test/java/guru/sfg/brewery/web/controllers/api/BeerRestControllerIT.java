@@ -7,13 +7,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import guru.sfg.brewery.security.RestAuthFilter;
 import guru.sfg.brewery.web.controllers.BaseIT;
 
 
-@WebMvcTest
+@SpringBootTest
 class BeerRestControllerIT extends BaseIT {
 
     public static final String BAD_ADMIN_PASSWORD = "gXuXrXuX";
@@ -21,59 +21,14 @@ class BeerRestControllerIT extends BaseIT {
     public static final String ADMIN_USER = "admin";
 
     @Test
-    void deleteBeerBadHeaderCredentials() throws Exception {
+    void deleteBeerHttpBasicBadCredentials() throws Exception {
         mockMvc.perform(delete("/api/v1/beer/97df0c39-90c4-4ae0-b663-453e8e19c311")
-            .header(RestAuthFilter.API_KEY, ADMIN_USER).header(RestAuthFilter.API_SECRET, BAD_ADMIN_PASSWORD))
+            .with(httpBasic(ADMIN_USER, BAD_ADMIN_PASSWORD)))
             .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void deleteBeerGoodHeaderCredentials() throws Exception {
-        mockMvc.perform(delete("/api/v1/beer/97df0c39-90c4-4ae0-b663-453e8e19c311")
-            .header(RestAuthFilter.API_KEY, ADMIN_USER).header(RestAuthFilter.API_SECRET, GOOD_ADMIN_PASSWORD))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    void deleteBeerGoodParameterCredentials() throws Exception {
-        mockMvc.perform(delete("/api/v1/beer/97df0c39-90c4-4ae0-b663-453e8e19c311")
-            .param(RestAuthFilter.API_KEY, ADMIN_USER).param(RestAuthFilter.API_SECRET, GOOD_ADMIN_PASSWORD))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    void deleteBeerBadParameterCredentials() throws Exception {
-        mockMvc.perform(delete("/api/v1/beer/97df0c39-90c4-4ae0-b663-453e8e19c311")
-            .param(RestAuthFilter.API_KEY, ADMIN_USER).param(RestAuthFilter.API_SECRET, BAD_ADMIN_PASSWORD))
-            .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    void deleteBeerGoodHeaderBadParameterCredentials() throws Exception {
-        mockMvc.perform(delete("/api/v1/beer/97df0c39-90c4-4ae0-b663-453e8e19c311")
-            .header(RestAuthFilter.API_KEY, ADMIN_USER).header(RestAuthFilter.API_SECRET, GOOD_ADMIN_PASSWORD)
-            .param(RestAuthFilter.API_KEY, ADMIN_USER).param(RestAuthFilter.API_SECRET, BAD_ADMIN_PASSWORD))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    void deleteBeerBadHeaderGoodParameterCredentials() throws Exception {
-        mockMvc.perform(delete("/api/v1/beer/97df0c39-90c4-4ae0-b663-453e8e19c311")
-            .header(RestAuthFilter.API_KEY, ADMIN_USER).header(RestAuthFilter.API_SECRET, BAD_ADMIN_PASSWORD)
-            .param(RestAuthFilter.API_KEY, ADMIN_USER).param(RestAuthFilter.API_SECRET, GOOD_ADMIN_PASSWORD))
-            .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    void deleteBeerOneHeaderOneParameterCredentials() throws Exception {
-        mockMvc.perform(delete("/api/v1/beer/97df0c39-90c4-4ae0-b663-453e8e19c311")
-            .header(RestAuthFilter.API_SECRET, GOOD_ADMIN_PASSWORD)
-            .param(RestAuthFilter.API_KEY, ADMIN_USER))
-            .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    void deleteBeerHttpBasic() throws Exception {
+    void deleteBeerHttpBasicGoodCredentials() throws Exception {
         mockMvc.perform(delete("/api/v1/beer/97df0c39-90c4-4ae0-b663-453e8e19c311")
             .with(httpBasic(ADMIN_USER, GOOD_ADMIN_PASSWORD)))
             .andExpect(status().is2xxSuccessful());
