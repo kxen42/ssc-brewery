@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithAnonymousUser;
@@ -13,29 +15,25 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 @SpringBootTest
 public class BeerControllerIT extends BaseIT {
 
-    @Test
-    void initCreationFormWithAdmin() throws Exception {
-        mockMvc.perform(get("/beers/new").with(httpBasic("admin", "guru")))
+    @ParameterizedTest(name="{0} can create new beer at /beers/new")
+    @CsvSource({
+        "admin, guru",
+        "user, password",
+        "scott, tiger"
+    })
+    void initCreationFormWith(String username, String password) throws Exception {
+        mockMvc.perform(get("/beers/new").with(httpBasic(username, password)))
             .andExpect(status().isOk())
             .andExpect(view().name("beers/createBeer"))
             .andExpect(model().attributeExists("beer"));
     }
 
     @Test
-    void initCreationFormWithUser() throws Exception {
-        mockMvc.perform(get("/beers/new").with(httpBasic("user", "password")))
-            .andExpect(status().isOk())
-            .andExpect(view().name("beers/createBeer"))
-            .andExpect(model().attributeExists("beer"));
+    void initCreationFormWithAnonymouse() throws Exception {
+        mockMvc.perform(get("/beers/new").with(anonymous()))
+            .andExpect(status().isUnauthorized());
     }
 
-    @Test
-    void initCreationFormWithScott() throws Exception {
-        mockMvc.perform(get("/beers/new").with(httpBasic("scott", "tiger")))
-            .andExpect(status().isOk())
-            .andExpect(view().name("beers/createBeer"))
-            .andExpect(model().attributeExists("beer"));
-    }
 
     @Test
     void findBeers() throws Exception {
@@ -51,9 +49,7 @@ public class BeerControllerIT extends BaseIT {
         // verify it gets through AnonymousAuthenticationFilter
         // aka the anonymous "authentication" facility
         mockMvc.perform(get("/beers/find").with(anonymous()))
-            .andExpect(status().isOk())
-            .andExpect(view().name("beers/findBeers"))
-            .andExpect(model().attributeExists("beer"));
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -62,9 +58,14 @@ public class BeerControllerIT extends BaseIT {
         // verify it gets through AnonymousAuthenticationFilter
         // aka the anonymous "authentication" facility
         mockMvc.perform(get("/beers/find"))
-            .andExpect(status().isOk())
-            .andExpect(view().name("beers/findBeers"))
-            .andExpect(model().attributeExists("beer"));
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void findBeerFormADMIN() throws Exception {
+        mockMvc.perform(get("/beers").param("beerName", "")
+            .with(httpBasic("admin", "guru")))
+            .andExpect(status().isOk());
     }
 
 // TODO: complete this experiment

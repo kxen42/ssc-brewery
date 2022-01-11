@@ -1,5 +1,7 @@
 package guru.sfg.brewery.config;
 
+import static org.springframework.http.HttpMethod.*;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,11 +28,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .authorizeRequests(authorize ->
                 authorize
+                    /* Embedded H2 DB */
                     .antMatchers("/h2-console/**").permitAll() // don't use in production
+                    /* Web App */
                     .antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll()
-                    .antMatchers("/beers/find", "/beers*").permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/v1/beer/**").permitAll()
-                    .mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").permitAll()
+                    .mvcMatchers("/brewery/breweries/**", "/brewery/breweries*").hasAnyRole("ADMIN","CUSTOMER")
+                    .mvcMatchers(GET, "/beers/find", "/beers/{upc}").hasAnyRole("ADMIN", "CUSTOMER", "USER")
+                    .mvcMatchers(GET, "/customers/find").hasAnyRole("ADMIN", "CUSTOMER")
+                    .mvcMatchers(POST, "/customers/new").hasRole("ADMIN")
+                    /* REST API */
+                    .mvcMatchers(DELETE, "/api/v1/beer/**").hasRole("ADMIN")
+                    .antMatchers(GET, "/api/v1/beer/**").hasAnyRole("ADMIN", "CUSTOMER", "USER")
+                    .antMatchers(GET, "/brewery/api/v1/beerUpc/{upc}").hasAnyRole("ADMIN", "CUSTOMER", "USER")
+                    .mvcMatchers(GET, "/brewery/api/v1/breweries/**").hasAnyRole("ADMIN","CUSTOMER")
             )
             .authorizeRequests() // all the paths
             .anyRequest().authenticated()
