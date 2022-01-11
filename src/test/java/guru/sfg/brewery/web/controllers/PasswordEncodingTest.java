@@ -3,6 +3,7 @@ package guru.sfg.brewery.web.controllers;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
@@ -20,6 +21,7 @@ import org.springframework.util.DigestUtils;
  * <li>StandardPasswordEncoder</li>
  * </ul>
  */
+@Disabled
 public class PasswordEncodingTest {
 
     static final String PASSWORD = "password";

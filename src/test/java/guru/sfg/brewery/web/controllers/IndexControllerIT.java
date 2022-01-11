@@ -5,12 +5,37 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
+import guru.sfg.brewery.repositories.BeerInventoryRepository;
+import guru.sfg.brewery.repositories.BeerRepository;
+import guru.sfg.brewery.repositories.CustomerRepository;
+import guru.sfg.brewery.services.BeerService;
+import guru.sfg.brewery.services.BreweryService;
+
+/**
+ * Created by jt on 6/13/20.
+ */
 @WebMvcTest
-class IndexControllerIT extends BaseIT {
+public class IndexControllerIT extends BaseIT {
+
+    @MockBean
+    BeerRepository beerRepository;
+
+    @MockBean
+    BeerInventoryRepository beerInventoryRepository;
+
+    @MockBean
+    BreweryService breweryService;
+
+    @MockBean
+    CustomerRepository customerRepository;
+
+    @MockBean
+    BeerService beerService;
 
     @Test
-    void allowsIndexPageReturned() throws Exception {
+    void testGetIndexSlash() throws Exception {
         mockMvc.perform(get("/"))
             .andExpect(status().isOk());
     }
@@ -27,11 +52,11 @@ class IndexControllerIT extends BaseIT {
             .andExpect(status().isOk());
     }
 
-    @Test
-    void allowsBreweryCssReturned() throws Exception {
-        mockMvc.perform(get("/resources/css/brewery.css"))
-            .andExpect(status().isOk());
-    }
+//    @Test
+//    void allowsBreweryCssReturned() throws Exception {
+//        mockMvc.perform(get("/resources/css/brewery.css"))
+//            .andExpect(status().isOk());
+//    }
 
     @Test
     void allowsBreweryPngReturned() throws Exception {

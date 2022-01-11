@@ -132,4 +132,10 @@ class BeerRestControllerIT extends BaseIT {
             .andExpect(status().isOk());
     }
 
+    @Test
+    void findBeerFormADMIN() throws Exception {
+        mockMvc.perform(get("/beers").param("beerName", "")
+                .with(httpBasic(ADMIN_USER, GOOD_ADMIN_PASSWORD)))
+            .andExpect(status().isOk());
+    }
 }
