@@ -22,6 +22,7 @@ import guru.sfg.brewery.domain.Beer;
 import guru.sfg.brewery.repositories.BeerInventoryRepository;
 import guru.sfg.brewery.repositories.BeerRepository;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -95,13 +97,13 @@ public class BeerController {
     public String processCreationForm(Beer beer) {
         //ToDO: Add Service
         Beer newBeer = Beer.builder()
-                .beerName(beer.getBeerName())
-                .beerStyle(beer.getBeerStyle())
-                .minOnHand(beer.getMinOnHand())
-                .price(beer.getPrice())
-                .quantityToBrew(beer.getQuantityToBrew())
-                .upc(beer.getUpc())
-                .build();
+            .beerName(beer.getBeerName())
+            .beerStyle(beer.getBeerStyle())
+            .minOnHand(beer.getMinOnHand())
+            .price(beer.getPrice())
+            .quantityToBrew(beer.getQuantityToBrew())
+            .upc(beer.getUpc())
+            .build();
 
         Beer savedBeer = beerRepository.save(newBeer);
         return "redirect:/beers/" + savedBeer.getId();
@@ -127,9 +129,7 @@ public class BeerController {
 
     private PageRequest createPageRequest(int page, int size, Sort.Direction sortDirection, String propertyName) {
         return PageRequest.of(page,
-                size,
-                Sort.by(sortDirection, propertyName));
+            size,
+            Sort.by(sortDirection, propertyName));
     }
 }
-
-
